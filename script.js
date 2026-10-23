@@ -1,37 +1,35 @@
 const sections = [
-    "hero",
-    "about",
-    "montage",
-    "parcours",
-    "avis",
-    "reseaux",
-    "contact"
+    ["hero", "hero"],
+    ["creator", "creator"],
+    ["maker", "maker"],
+    ["shops", "shops"],
+    ["projects", "parcours"],
+    ["reviews", "avis"],
+    ["socials", "reseaux"],
+    ["contact", "contact"]
 ];
 
 async function loadSections() {
+    await Promise.all(
+        sections.map(async ([containerId, fileName]) => {
+            const container = document.getElementById(containerId);
 
-    for (const section of sections) {
+            if (!container) return;
 
-        const container = document.getElementById(section);
+            try {
+                const response = await fetch(`sections/${fileName}.html`);
 
-        if (!container) continue;
+                if (!response.ok) {
+                    throw new Error(`Erreur lors du chargement de ${fileName}.html`);
+                }
 
-        try {
+                container.innerHTML = await response.text();
 
-            const response = await fetch(`sections/${section}.html`);
-
-            if (!response.ok) {
-                throw new Error(`Impossible de charger ${section}`);
+            } catch (error) {
+                console.error(error);
             }
-
-            container.innerHTML = await response.text();
-
-        } catch (error) {
-
-            console.error(error);
-
-        }
-    }
+        })
+    );
 }
 
 loadSections();
